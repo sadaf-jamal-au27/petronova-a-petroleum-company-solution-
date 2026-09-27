@@ -1,0 +1,5 @@
+name: ingest-prod-as2
+region: $locations:secondary
+ip_cidr_range: 10.120.4.0/24
+description: Ingest endpoints asia-south2 (DR)
+enable_private_access: true

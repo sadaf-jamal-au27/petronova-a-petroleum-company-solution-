@@ -1,0 +1,32 @@
+# .github/workflows/deploy.yml in petronova-deployments: deploy every changed service file
+name: deploy
+on:
+  push:
+    branches: [main]
+    paths: ["dev/**", "prod/**"]
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs: { matrix: "${{ steps.m.outputs.matrix }}" }
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - id: m
+        run: |
+          files=$(git diff --name-only HEAD~1 HEAD -- dev prod | grep '.yaml$' || true)
+          echo "matrix=$(for f in $files; do echo "{\"env\":\"${f%%/*}\",\"service\":\"$(basename ${f%.yaml})\"}"; done | jq -sc .)" >> "$GITHUB_OUTPUT"
+  deploy:
+    needs: changes
+    if: needs.changes.outputs.matrix != '[]'
+    strategy:
+      max-parallel: 2
+      matrix: { include: "${{ fromJson(needs.changes.outputs.matrix) }}" }
+    uses: petronova-org/petronova-ci-templates/.github/workflows/reusable-helm-deploy.yml@v1
+    with:
+      env: ${{ matrix.env }}
+      service: ${{ matrix.service }}
+      cluster: petronova-${{ matrix.env }}-primary
+      location: asia-south1
+      project: pnlab01-${{ matrix.env }}-apps-0
+      deployer-sa: deployer@pnlab01-${{ matrix.env }}-apps-0.iam.gserviceaccount.com
+    secrets: inherit

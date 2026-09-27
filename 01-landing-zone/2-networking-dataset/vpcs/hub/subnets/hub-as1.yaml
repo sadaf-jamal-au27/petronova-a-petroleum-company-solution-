@@ -1,0 +1,5 @@
+name: hub-as1
+region: $locations:primary
+ip_cidr_range: 10.100.0.0/24
+description: Hub services (DNS forwarders, NGFW endpoints, proxies) asia-south1
+enable_private_access: true

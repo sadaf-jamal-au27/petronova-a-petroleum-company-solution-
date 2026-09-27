@@ -1,0 +1,6 @@
+namespace: operations
+team: app-squads
+dataClassification: confidential
+adminGroup: pn-app-squads@petronova-lab.in
+viewGroups: [gcp-platform-team@petronova-lab.in, pn-soc-analysts@petronova-lab.in]
+quota: { requests.cpu: "6", requests.memory: 12Gi, limits.memory: 24Gi, pods: "60", services.loadbalancers: "0" }

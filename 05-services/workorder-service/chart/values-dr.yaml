@@ -1,0 +1,6 @@
+# DR cluster (asia-south2): deployed at replicas 0 (warm standby); failover.sh scales it up.
+replicaCount: 0
+autoscaling: { enabled: false, minReplicas: 0, maxReplicas: 12, targetCPU: 65 }
+pdb: { enabled: false, minAvailable: 1 }
+cloudSqlProxy:
+  instance: "pnlab01-prod-apps-0:asia-south2:pn-apps-prod-dr"   # promoted replica

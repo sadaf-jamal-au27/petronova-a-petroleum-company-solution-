@@ -1,0 +1,12 @@
+# .github/workflows/ci.yml in the alarm-services repo
+name: alarm-service
+on:
+  push: { branches: [main], paths: ["alarm-service/**"] }
+  pull_request: { paths: ["alarm-service/**"] }
+jobs:
+  build:
+    uses: petronova-org/petronova-ci-templates/.github/workflows/reusable-service-build.yml@v1
+    with:
+      service: alarm-service
+      build-sa: ci-build@pnlab01-prod-artifacts-0.iam.gserviceaccount.com
+    secrets: inherit

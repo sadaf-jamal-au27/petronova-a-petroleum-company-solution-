@@ -1,0 +1,5 @@
+name: hub-as2
+region: $locations:secondary
+ip_cidr_range: 10.100.1.0/24
+description: Hub services asia-south2 (DR)
+enable_private_access: true

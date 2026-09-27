@@ -1,0 +1,8 @@
+name: gke-dev-as1
+region: $locations:primary
+ip_cidr_range: 10.130.0.0/22
+description: GKE dev nodes
+enable_private_access: true
+secondary_ip_ranges:
+  pods: 10.202.0.0/16
+  services: 10.212.0.0/22

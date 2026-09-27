@@ -1,0 +1,8 @@
+name: gke-prod-as1
+region: $locations:primary
+ip_cidr_range: 10.110.0.0/22
+description: GKE prod nodes asia-south1
+enable_private_access: true
+secondary_ip_ranges:
+  pods: 10.200.0.0/16
+  services: 10.210.0.0/22

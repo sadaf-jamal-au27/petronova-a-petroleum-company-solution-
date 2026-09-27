@@ -1,0 +1,7 @@
+# dev spoke resolves everything through the hub (forwarding + private zones)
+project_id: $project_ids:net-dev-0
+domain: .
+peering:
+  peer_network: $networks:hub
+  client_networks:
+    - $networks:dev

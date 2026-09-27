@@ -1,0 +1,10 @@
+# Prod overrides (primary cluster). DR cluster uses values-dr.yaml on top.
+replicaCount: 3
+gcpServiceAccount: timeseries-api@pnlab01-prod-apps-0.iam.gserviceaccount.com
+config:
+  LOG_LEVEL: "warning"
+  EVENTS_PROJECT: "pnlab01-prod-ingest-0"
+  BIGTABLE_PROJECT: "pnlab01-prod-data-0"
+  BIGTABLE_INSTANCE: "pn-telemetry-prod"
+  BIGTABLE_APP_PROFILE: "serving"
+autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 12, targetCPU: 65 }

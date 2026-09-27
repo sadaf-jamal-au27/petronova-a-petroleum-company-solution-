@@ -1,0 +1,5 @@
+name: data-dev-as1
+region: $locations:primary
+ip_cidr_range: 10.130.5.0/24
+description: Dataflow workers dev
+enable_private_access: true

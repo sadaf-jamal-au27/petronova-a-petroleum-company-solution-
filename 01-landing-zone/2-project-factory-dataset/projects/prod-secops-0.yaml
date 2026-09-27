@@ -1,0 +1,20 @@
+# SecOps: SIEM forwarding, SCC exports, locked audit log bucket, evidence packs
+parent: $folder_ids:secops
+services:
+  - securitycenter.googleapis.com
+  - bigquery.googleapis.com
+  - storage.googleapis.com
+  - cloudasset.googleapis.com
+  - ids.googleapis.com
+iam_by_principals:
+  $iam_principals:pn-soc-analysts:
+    - roles/bigquery.dataViewer
+    - roles/bigquery.jobUser
+  $iam_principals:pn-auditors:
+    - roles/viewer
+service_accounts:
+  evidence-exporter:
+    display_name: Monthly audit evidence exporter
+labels:
+  environment: production
+  zone: security

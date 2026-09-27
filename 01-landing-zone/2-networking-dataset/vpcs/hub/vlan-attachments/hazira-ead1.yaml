@@ -1,0 +1,21 @@
+# Hazira gas plant Partner Interconnect (service provider completes the circuit using the pairing key)
+name: hazira-ead1
+region: $locations:primary
+description: PetroNova Hazira Partner Interconnect EAD1
+router_config:
+  create: false
+  name: $routers:hub/pic-as1
+peer_asn: "65020"
+mtu: 1500
+bgp_peer:
+  custom_advertise:
+    all_subnets: false
+    ip_ranges:
+      "10.100.0.0/22": "hub"
+      "10.110.0.0/20": "prod-asia-south1"
+      "10.120.0.0/20": "prod-asia-south2-dr"
+      "10.130.0.0/20": "dev"
+      "199.36.153.8/30": "private-googleapis"
+      "199.36.153.4/30": "restricted-googleapis"
+partner_interconnect_config:
+  edge_availability_domain: AVAILABILITY_DOMAIN_1

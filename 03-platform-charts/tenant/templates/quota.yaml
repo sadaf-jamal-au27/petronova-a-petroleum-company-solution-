@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ .Values.team }}-quota
+  namespace: {{ .Values.namespace }}
+spec:
+  hard:
+    {{- toYaml .Values.quota | nindent 4 }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ .Values.team }}-limits
+  namespace: {{ .Values.namespace }}
+spec:
+  limits:
+    - type: Container
+      defaultRequest:
+        {{- toYaml .Values.limitRange.defaultRequest | nindent 8 }}
+      default:
+        {{- toYaml .Values.limitRange.default | nindent 8 }}
+      max:
+        {{- toYaml .Values.limitRange.max | nindent 8 }}

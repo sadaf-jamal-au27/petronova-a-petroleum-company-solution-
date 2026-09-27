@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PetroNova Operator Portal</title>
+<style>body{font-family:system-ui,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}header{padding:1rem 1.5rem;background:#111827;border-bottom:1px solid #334155}
+main{padding:1.5rem;display:grid;gap:1rem}table{width:100%;border-collapse:collapse}td,th{padding:.4rem;border-bottom:1px solid #334155;text-align:left}
+.CRITICAL{color:#f87171}.HIGH{color:#fb923c}.MEDIUM{color:#facc15}.LOW{color:#94a3b8}button{background:#2563eb;color:#fff;border:0;padding:.3rem .7rem;border-radius:4px}</style></head>
+<body><header><strong>PetroNova</strong> · Control room alarms (internal, IAP-protected)</header>
+<main><table><thead><tr><th>Raised</th><th>Site</th><th>Asset</th><th>Tag</th><th>Severity</th><th>Value / limit</th><th></th></tr></thead><tbody id="rows"></tbody></table></main>
+<script>
+async function load(){const r=await fetch('/api/alarms/alarms');const a=await r.json();
+document.getElementById('rows').innerHTML=a.map(x=>`<tr><td>${x.raised_at}</td><td>${x.site}</td><td>${x.asset_id}</td><td>${x.tag}</td><td class="${x.severity}">${x.severity}</td><td>${(+x.value).toFixed(2)} / ${(+x.threshold).toFixed(2)}</td><td>${x.acknowledged_by||`<button onclick="ack('${x.alarm_id}')">Ack</button>`}</td></tr>`).join('');}
+async function ack(id){await fetch('/api/alarms/alarms/'+id+'/ack',{method:'POST'});load();}
+load();setInterval(load,5000);
+</script></body></html>

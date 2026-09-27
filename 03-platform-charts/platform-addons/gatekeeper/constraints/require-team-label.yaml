@@ -1,0 +1,16 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: require-petronova-team
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment"]
+      - apiGroups: ["batch"]
+        kinds: ["CronJob"]
+    excludedNamespaces: [kube-system, gke-managed-system, gmp-system, platform-system]
+  parameters:
+    labels:
+      - key: petronova.io/team

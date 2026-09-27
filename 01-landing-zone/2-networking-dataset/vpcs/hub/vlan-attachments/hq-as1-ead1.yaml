@@ -1,0 +1,24 @@
+# Mumbai HQ Dedicated Interconnect VLAN attachment (hq-as1-ead1). 99.99% topology = 4 attachments, 2 metros, 2 regions.
+name: hq-as1-ead1
+region: $locations:primary
+description: PetroNova HQ Dedicated Interconnect hq-as1-ead1
+router_config:
+  create: false
+  name: $routers:hub/ic-as1
+peer_asn: "65010"
+mtu: 1500
+bgp_peer:
+  custom_advertise:
+    all_subnets: false
+    ip_ranges:
+      "10.100.0.0/22": "hub"
+      "10.110.0.0/20": "prod-asia-south1"
+      "10.120.0.0/20": "prod-asia-south2-dr"
+      "10.130.0.0/20": "dev"
+      "199.36.153.8/30": "private-googleapis"
+      "199.36.153.4/30": "restricted-googleapis"
+dedicated_interconnect_config:
+  bandwidth: BPS_10G
+  # REPLACE with the Interconnect resource provisioned for this metro/EAD
+  interconnect: "https://www.googleapis.com/compute/v1/projects/INTERCONNECT_PROJECT/global/interconnects/pn-hq-ead1-mum"
+  vlan_tag: "110"

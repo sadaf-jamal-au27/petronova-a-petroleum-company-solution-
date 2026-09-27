@@ -1,0 +1,7 @@
+# timeseries-api in dev (cluster petronova-dev-primary). CI bumps chartVersion/imageTag via PR.
+release: timeseries-api
+namespace: operations
+chart: oci://asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/helm-charts/timeseries-api
+chartVersion: 1.0.0
+imageTag: "1.0.0"
+overrides: {}

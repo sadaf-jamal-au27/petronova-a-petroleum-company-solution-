@@ -1,0 +1,30 @@
+name: reusable-helm-deploy
+on:
+  workflow_call:
+    inputs:
+      env: { type: string, required: true }        # dev | prod
+      service: { type: string, required: true }
+      cluster: { type: string, required: true }
+      location: { type: string, required: true }
+      project: { type: string, required: true }
+      deployer-sa: { type: string, required: true }
+    secrets:
+      wif-provider: { required: true }
+permissions: { contents: read, id-token: write }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}          # prod requires reviewers in GitHub Environments
+    concurrency: deploy-${{ inputs.env }}-${{ inputs.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.wif-provider }}
+          service_account: ${{ inputs.deployer-sa }}
+      - uses: google-github-actions/get-gke-credentials@v2
+        with: { cluster_name: "${{ inputs.cluster }}", location: "${{ inputs.location }}", project_id: "${{ inputs.project }}" }
+      - uses: azure/setup-helm@v4
+        with: { version: v3.18.4 }
+      - run: gcloud auth print-access-token | helm registry login -u oauth2accesstoken --password-stdin https://asia-south1-docker.pkg.dev
+      - run: ./scripts/deploy.sh ${{ inputs.env }} ${{ inputs.service }}

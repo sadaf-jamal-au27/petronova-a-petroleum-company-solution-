@@ -1,0 +1,7 @@
+# Copy to 0-org-setup.imports.auto.tfvars for the FIRST apply only.
+# Paste the list printed by scripts/prereqs.sh (no 'constraints/' prefix).
+org_policies_imports = [
+  "iam.allowedPolicyMemberDomains",
+  "iam.managed.disableServiceAccountKeyCreation",
+  "storage.uniformBucketLevelAccess",
+]

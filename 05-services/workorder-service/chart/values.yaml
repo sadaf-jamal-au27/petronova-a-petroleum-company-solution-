@@ -1,0 +1,54 @@
+# Values for energy-common (library charts cannot ship defaults; every key is listed).
+team: app-squads
+dataClassification: confidential
+nameOverride: ""
+workload: { kind: Deployment, schedule: "", timeZone: Asia/Kolkata }
+image:
+  repository: asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/docker-images/workorder-service
+  tag: ""
+  digest: ""
+replicaCount: 2
+gcpServiceAccount: workorder-service@pnlab01-dev-apps-0.iam.gserviceaccount.com
+automountServiceAccountToken: false
+priorityClassName: ""
+podSecurity: { runAsUser: 65532 }
+command: []
+args: []
+env: []
+config:
+  LOG_LEVEL: "info"
+  EVENTS_PROJECT: "pnlab01-dev-ingest-0"
+  DB_NAME: "workorders"
+  DB_USER: "workorder-service@pnlab01-dev-apps-0.iam"
+  DB_HOST: "127.0.0.1"
+  DB_PORT: "5432"
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+extraVolumes: []
+extraVolumeMounts: []
+service: { enabled: true, port: 80, targetPort: 8080 }
+probes: { enabled: true, readinessPath: /ready, livenessPath: /healthz }
+resources:
+  requests: { cpu: 100m, memory: 192Mi }
+  limits: { memory: 384Mi }
+autoscaling: { enabled: false, minReplicas: 2, maxReplicas: 8, targetCPU: 70 }
+pdb: { enabled: true, minAvailable: 1 }
+networkPolicy:
+  enabled: true
+  allowFrom:
+    - { app: operator-portal }
+  proxyOnlySubnet: 10.130.8.0/23
+externalSecret: { enabled: false, storeName: gcp-secret-manager, refreshInterval: 1h, keys: [] }
+cloudSqlProxy:
+  enabled: true
+  image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.1
+  instance: "pnlab01-dev-apps-0:asia-south1:pn-apps-dev"
+  port: 5432
+httpRoute:
+  enabled: false
+  gateway: { name: petronova-gateway, namespace: gateway-infra }
+  hostnames: []
+  pathPrefix: /
+  stripPrefix: false
+metrics: { enabled: true, path: /metrics, interval: 30s }

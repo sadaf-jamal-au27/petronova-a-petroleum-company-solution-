@@ -1,0 +1,21 @@
+# PetroNova dev spoke attached to the NCC hub; learns on-prem DMZ routes from hybrid spokes
+project_id: $project_ids:net-dev-0
+name: dev-0
+delete_default_routes_on_create: true
+mtu: 1500
+nat_config:
+  nat-as1:
+    region: $locations:primary
+ncc_config:
+  hub: $ncc_hubs:hub
+  group: $ncc_groups:hub/default
+psa_configs:
+  - ranges:
+      psa-petronova: 10.151.0.0/20
+    export_routes: true
+    import_routes: true
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

@@ -1,0 +1,75 @@
+# Applications (dev): GKE (regional; prod also has a DR cluster in asia-south2), Cloud SQL
+parent: $folder_ids:applications/dev
+services:
+  - container.googleapis.com
+  - compute.googleapis.com
+  - sqladmin.googleapis.com
+  - servicenetworking.googleapis.com
+  - secretmanager.googleapis.com
+  - binaryauthorization.googleapis.com
+  - iap.googleapis.com
+shared_vpc_service_config:
+  host_project: $project_ids:net-dev-0
+  service_agent_iam:
+    "roles/container.hostServiceAgentUser":
+      - $service_agents:container-engine
+    "roles/compute.networkUser":
+      - $service_agents:container-engine
+      - $service_agents:cloudservices
+service_encryption_key_ids:
+  container.googleapis.com:
+    - $kms_keys:gke-dev-petronova
+  sqladmin.googleapis.com:
+    - $kms_keys:sql-dev-petronova
+service_accounts:
+  gke-nodes:
+    display_name: GKE nodes
+    iam_project_roles:
+      $project_ids:dev-apps-0:
+        - roles/logging.logWriter
+        - roles/monitoring.metricWriter
+        - roles/monitoring.viewer
+        - roles/stackdriver.resourceMetadata.writer
+  mqtt-bridge:
+    display_name: mqtt-bridge (publishes telemetry)
+    iam_project_roles:
+      $project_ids:dev-ingest-0:
+        - roles/pubsub.publisher
+  alarm-service:
+    display_name: alarm-service
+    iam_project_roles:
+      $project_ids:dev-apps-0:
+        - roles/cloudsql.client
+        - roles/cloudsql.instanceUser
+      $project_ids:dev-ingest-0:
+        - roles/pubsub.subscriber
+        - roles/pubsub.publisher
+  timeseries-api:
+    display_name: timeseries-api (reads Bigtable)
+    iam_project_roles:
+      $project_ids:dev-data-0:
+        - roles/bigtable.reader
+  asset-registry:
+    display_name: asset-registry
+    iam_project_roles:
+      $project_ids:dev-apps-0:
+        - roles/cloudsql.client
+        - roles/cloudsql.instanceUser
+  workorder-service:
+    display_name: workorder-service
+    iam_project_roles:
+      $project_ids:dev-apps-0:
+        - roles/cloudsql.client
+        - roles/cloudsql.instanceUser
+      $project_ids:dev-ingest-0:
+        - roles/pubsub.subscriber
+  external-secrets:
+    display_name: External Secrets Operator
+  deployer:
+    display_name: CI Helm deployer
+    iam_project_roles:
+      $project_ids:dev-apps-0:
+        - roles/container.developer
+labels:
+  environment: development
+  zone: applications

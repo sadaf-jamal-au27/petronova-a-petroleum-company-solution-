@@ -1,0 +1,5 @@
+name: proxy-dev-as1
+region: $locations:primary
+ip_cidr_range: 10.130.8.0/23
+proxy_only: true
+description: Proxy-only subnet dev

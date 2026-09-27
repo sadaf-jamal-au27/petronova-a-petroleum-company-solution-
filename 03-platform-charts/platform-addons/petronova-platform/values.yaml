@@ -1,0 +1,23 @@
+env: dev
+secretStores:
+  # One ClusterSecretStore per project that holds secrets
+  - name: gcp-secret-manager
+    projectID: pnlab01-dev-apps-0
+  - name: gcp-secret-manager-platform
+    projectID: pnlab01-dev-apps-0
+gateway:
+  enabled: true
+  name: petronova-gateway
+  namespace: gateway-infra
+  # Internal only: operators reach the portal over Interconnect via IAP/internal LB
+  className: gke-l7-rilb
+  # Regional internal gateway uses a regional Certificate Manager certificate
+  certificateAnnotation:
+    key: networking.gke.io/cert-manager-certs
+    value: petronova-dev-portal-cert
+  allowedRouteNamespaces: [operations]
+  staticIPName: petronova-dev-portal-ilb-ip   # regional internal static IP in the ingest subnet
+cloudArmor:
+  policyName: petronova-dev-waf           # created with gcloud (see docs/runbooks)
+  targetServices: []                       # [{name: operator-portal, namespace: operations}]
+priorityClasses: true

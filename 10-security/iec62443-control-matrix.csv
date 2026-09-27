@@ -1,0 +1,13 @@
+control_id,iec62443_ref,nist_csf_2,iso27001_2022,implementation,automated_check,evidence_artifact,owner
+ZC-01,3-2 zones/conduits,PR.IR-01,A.8.22,"Only DMZ prefixes over BGP; deny-to-plant-ot NGFW rule",evidence.sh: bgp_learned_routes,bgp-learned-routes.json,Network
+ZC-02,3-3 SR 5.1,PR.IR-01,A.8.22,"Site VPC deny-all ingress; cloud cannot initiate to DMZ",evidence.sh: firewall_rules,firewall-rules.json,Network
+IA-01,3-3 SR 1.1,PR.AA-01,A.5.16,"Cloud Identity + FIDO2 for admins",Admin console report,mfa-enrollment.csv,Security
+IA-02,3-3 SR 1.5,PR.AA-05,A.8.2,"No SA keys (org policy); WIF for CI",evidence.sh: org_policies + sa_keys,org-policies.json / sa-keys.json,Cloud Foundation
+AC-01,3-3 SR 2.1,PR.AA-05,A.8.2,"Groups-only IAM; PAM for prod elevation",evidence.sh: iam_bindings,iam-bindings.json,Security
+DC-01,3-3 SR 4.1,PR.DS-01,A.8.24,"CMEK on all OT-Data services",evidence.sh: kms_keys,kms-keys.json,Security
+DC-02,3-3 SR 4.3,PR.DS-02,A.8.24,"MACsec on Interconnect; IPsec on VPN; TLS/mTLS MQTT",Interconnect MACsec status,interconnects.json,Network
+AU-01,3-3 SR 6.1,DE.CM-01,A.8.15,"Org log sink to locked bucket; Data Access logs",evidence.sh: log_sinks,log-sinks.json,Security
+CM-01,2-4 SP.03,PR.PS-01,A.8.32,"GitOps: PR approval + signed images (Binary Authorization)",GitHub API + binauthz policy,binauthz-policy.yaml,Platform
+BR-01,3-3 SR 7.3,RC.RP-01,A.8.13,"Immutable backup vaults; quarterly restore tests",DR test reports,dr-test-*.md,Platform
+IR-01,2-1,RS.MA-01,A.5.26,"SOAR playbook: withdraw site BGP, CERT-In 6h notice",SecOps case records,ir-drill-*.md,SOC
+VM-01,3-3 SR 3.4,ID.RA-01,A.8.8,"SCC Enterprise + Artifact Analysis",evidence.sh: scc_findings,scc-findings.json,Security

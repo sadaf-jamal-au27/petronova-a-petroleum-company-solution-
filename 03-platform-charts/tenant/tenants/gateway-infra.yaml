@@ -1,0 +1,6 @@
+namespace: gateway-infra
+team: platform
+dataClassification: internal
+adminGroup: gcp-platform-team@petronova-lab.in
+quota: { requests.cpu: "1", requests.memory: 1Gi, limits.memory: 2Gi, pods: "10", services.loadbalancers: "0" }
+allowSameNamespace: true

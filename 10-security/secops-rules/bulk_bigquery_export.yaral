@@ -1,0 +1,13 @@
+rule petronova_bulk_bigquery_export {
+  meta:
+    description = "More than 20 BigQuery extract jobs by one principal in 1 hour on OT-Data projects"
+    severity = "HIGH"
+  events:
+    $e.metadata.product_event_type = "google.cloud.bigquery.v2.JobService.InsertJob"
+    $e.target.resource.attribute.labels["jobType"] = "EXTRACT"
+    $e.principal.user.email_addresses = $who
+  match:
+    $who over 1h
+  condition:
+    #e > 20
+}

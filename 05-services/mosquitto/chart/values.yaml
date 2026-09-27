@@ -1,0 +1,8 @@
+image: eclipse-mosquitto:2.0.20
+replicas: 1                     # single broker per region; edges buffer during restarts
+tlsSecret: mosquitto-server-tls # server cert (CAS-issued) + ca.crt for client verification
+loadBalancerIP: 10.130.4.10     # static internal IP in ingest subnet (mqtt-dev.gcp.petronova.internal)
+allowedSourceRanges: [172.20.0.0/22, 172.21.0.0/24, 172.22.0.0/24]
+resources:
+  requests: { cpu: 200m, memory: 256Mi }
+  limits: { memory: 512Mi }

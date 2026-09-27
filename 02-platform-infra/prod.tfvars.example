@@ -1,0 +1,10 @@
+env        = "prod"
+dr_enabled = true
+# ... same shape as dev, plus:
+# network.gke_subnet_dr  = ".../regions/asia-south2/subnetworks/gke-prod-as2"
+# network.master_cidr_dr = "172.16.10.16/28"
+# kms_keys.*_dr          = keys from keyring prod-dr-petronova (asia-south2)
+# gke = { spot = false, min_nodes = 2, max_nodes = 6 }
+# bigtable_nodes = 3
+# sql_tier = "db-perf-optimized-N-4"
+# poc_site = { enabled = false }

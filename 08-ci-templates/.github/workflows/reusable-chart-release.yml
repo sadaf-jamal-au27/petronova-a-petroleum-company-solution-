@@ -1,0 +1,42 @@
+name: reusable-chart-release
+on:
+  workflow_call:
+    inputs:
+      chart-path: { type: string, required: true }
+      publisher-sa: { type: string, required: true }
+      registry: { type: string, default: oci://asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/helm-charts }
+    secrets:
+      wif-provider: { required: true }
+    outputs:
+      version: { value: "${{ jobs.release.outputs.version }}" }
+permissions: { contents: read, id-token: write }
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs: { version: "${{ steps.ver.outputs.version }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with: { version: v3.18.4 }
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.wif-provider }}
+          service_account: ${{ inputs.publisher-sa }}
+      - name: Login to Artifact Registry (OCI)
+        run: gcloud auth print-access-token | helm registry login -u oauth2accesstoken --password-stdin https://asia-south1-docker.pkg.dev
+      - id: ver
+        name: Version = Chart.yaml version + run number (immutable)
+        run: |
+          base=$(yq '.version' ${{ inputs.chart-path }}/Chart.yaml)
+          echo "version=${base%.*}.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - name: Lint, render, schema-check
+        run: |
+          helm dependency update ${{ inputs.chart-path }}
+          helm lint ${{ inputs.chart-path }} --strict
+          helm template ci ${{ inputs.chart-path }} > rendered.yaml
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
+          ./kubeconform -strict -ignore-missing-schemas -summary rendered.yaml
+      - name: Package and push
+        run: |
+          helm package ${{ inputs.chart-path }} --version ${{ steps.ver.outputs.version }}
+          helm push *.tgz ${{ inputs.registry }}

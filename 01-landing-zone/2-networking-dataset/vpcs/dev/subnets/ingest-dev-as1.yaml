@@ -1,0 +1,5 @@
+name: ingest-dev-as1
+region: $locations:primary
+ip_cidr_range: 10.130.4.0/24
+description: Ingest endpoints dev (POC site simulator connects here)
+enable_private_access: true

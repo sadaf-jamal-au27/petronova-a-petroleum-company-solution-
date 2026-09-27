@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: mosquitto-config }
+data:
+  mosquitto.conf: |
+    persistence false
+    log_dest stdout
+    # mTLS listener for edge gateways and the bridge
+    listener 8883
+    cafile /certs/ca.crt
+    certfile /certs/tls.crt
+    keyfile /certs/tls.key
+    require_certificate true
+    use_identity_as_username true
+    tls_version tlsv1.2
+    acl_file /mosquitto/config/acl
+  acl: |
+    # edges may only publish to their own site topic; the bridge subscribes to all
+    pattern write petronova/%u/telemetry
+    user mqtt-bridge
+    topic read petronova/+/telemetry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+  labels: { app.kubernetes.io/name: mosquitto, petronova.io/team: data-team }
+spec:
+  replicas: {{ .Values.replicas }}
+  selector: { matchLabels: { app.kubernetes.io/name: mosquitto } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: mosquitto, petronova.io/team: data-team } }
+    spec:
+      automountServiceAccountToken: false
+      securityContext: { runAsNonRoot: true, runAsUser: 1883, runAsGroup: 1883, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: mosquitto
+          image: {{ .Values.image }}
+          ports: [{ name: mqtts, containerPort: 8883 }]
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: ["ALL"] } }
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe: { tcpSocket: { port: 8883 }, periodSeconds: 10 }
+          volumeMounts:
+            - { name: config, mountPath: /mosquitto/config }
+            - { name: certs, mountPath: /certs, readOnly: true }
+      volumes:
+        - name: config
+          configMap: { name: mosquitto-config }
+        - name: certs
+          secret: { secretName: {{ .Values.tlsSecret }} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    networking.gke.io/internal-load-balancer-allow-global-access: "false"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{ .Values.loadBalancerIP }}
+  loadBalancerSourceRanges: {{- toYaml .Values.allowedSourceRanges | nindent 4 }}
+  selector: { app.kubernetes.io/name: mosquitto }
+  ports: [{ name: mqtts, port: 8883, targetPort: mqtts }]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: mosquitto-from-dmz }
+spec:
+  podSelector: { matchLabels: { app.kubernetes.io/name: mosquitto } }
+  policyTypes: ["Ingress"]
+  ingress:
+    - ports: [{ port: 8883, protocol: TCP }]
+      from:
+        {{- range .Values.allowedSourceRanges }}
+        - ipBlock: { cidr: {{ . }} }
+        {{- end }}
+        - podSelector: { matchLabels: { app.kubernetes.io/name: mqtt-bridge } }

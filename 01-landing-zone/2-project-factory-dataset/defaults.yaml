@@ -1,0 +1,28 @@
+# PetroNova project factory defaults (FAST v58.0.0)
+projects:
+  defaults:
+    locations:
+      storage: $locations:primary
+      bigquery: $locations:primary
+    labels:
+      app: petronova
+  merges:
+    services:
+      - logging.googleapis.com
+      - monitoring.googleapis.com
+  # Phase 2 hardening: enable after 1-vpcsc (dry-run first)
+  # overrides:
+  #   vpc_sc:
+  #     perimeter_name: $vpc_sc_perimeters:default
+  #     is_dry_run: true
+context:
+  locations:
+    primary: asia-south1
+    secondary: asia-south2
+  iam_principals:
+    gcp-platform-team: group:gcp-platform-team@petronova-lab.in
+    pn-ot-engineering: group:pn-ot-engineering@petronova-lab.in
+    pn-data-team: group:pn-data-team@petronova-lab.in
+    pn-app-squads: group:pn-app-squads@petronova-lab.in
+    pn-soc-analysts: group:pn-soc-analysts@petronova-lab.in
+    pn-auditors: group:pn-auditors@petronova-lab.in

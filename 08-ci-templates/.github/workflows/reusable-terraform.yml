@@ -1,0 +1,41 @@
+# Plan on PR, apply on main, for FAST stages and stage 3. Keyless auth via Workload Identity Federation.
+name: reusable-terraform
+on:
+  workflow_call:
+    inputs:
+      working-directory: { type: string, required: true }
+      plan-sa:  { type: string, required: true }
+      apply-sa: { type: string, required: true }
+      tf-version: { type: string, default: "1.12.2" }
+    secrets:
+      wif-provider: { required: true }
+permissions: { contents: read, id-token: write, pull-requests: write }
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: "${{ inputs.working-directory }}" } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.wif-provider }}
+          service_account: ${{ github.event_name == 'push' && inputs.apply-sa || inputs.plan-sa }}
+      - uses: hashicorp/setup-terraform@v3
+        with: { terraform_version: "${{ inputs.tf-version }}" }
+      - run: terraform fmt -check -recursive
+      - run: terraform init -input=false
+      - run: terraform validate
+      - id: plan
+        run: terraform plan -input=false -no-color -out tfplan | tee plan.txt
+      - name: Comment plan on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('${{ inputs.working-directory }}/plan.txt', 'utf8').slice(-60000);
+            github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number,
+              body: "```\n" + plan + "\n```" });
+      - name: Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform apply -input=false tfplan

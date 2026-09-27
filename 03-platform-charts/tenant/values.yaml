@@ -1,0 +1,20 @@
+# One release per team per cluster: helm upgrade --install tenant-<team> ./tenant -f tenants/<team>.yaml
+namespace: example-team
+team: example-team
+dataClassification: internal
+podSecurity: restricted            # Pod Security Standard enforced on the namespace
+adminGroup: ""                     # Google group bound to namespace admin (requires Google Groups for RBAC)
+viewGroups: []
+quota:
+  requests.cpu: "4"
+  requests.memory: 8Gi
+  limits.memory: 16Gi
+  pods: "50"
+  services.loadbalancers: "0"
+limitRange:
+  defaultRequest: { cpu: 100m, memory: 128Mi }
+  default: { memory: 256Mi }
+  max: { cpu: "4", memory: 8Gi }
+allowSameNamespace: false        # true only for multi-component upstream charts
+# Namespaces allowed to call into this tenant (in addition to per-app policies)
+allowIngressFromNamespaces: []

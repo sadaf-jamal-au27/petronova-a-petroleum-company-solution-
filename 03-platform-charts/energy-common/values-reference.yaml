@@ -1,0 +1,76 @@
+# Every value understood by energy-common. Copy what you need into your service chart.
+team: app-squads                 # required: owning team (label + cost allocation)
+dataClassification: phi            # phi | confidential | internal | public
+nameOverride: ""
+
+workload:
+  kind: Deployment                 # Deployment | CronJob
+  schedule: ""                     # CronJob only, e.g. "0 2 * * *"
+  timeZone: Asia/Kolkata
+  backoffLimit: 2
+  activeDeadlineSeconds: 3600
+
+image:
+  repository: asia-south1-docker.pkg.dev/PROJECT/docker-images/SERVICE
+  tag: ""                          # set by CI; defaults to appVersion
+  digest: ""                       # prefer digests in prod
+
+replicaCount: 2
+gcpServiceAccount: ""              # GSA email for Workload Identity
+automountServiceAccountToken: false
+podSecurity: { runAsUser: 65532 }
+command: []
+args: []
+env: []
+config: {}                         # rendered to a ConfigMap and injected with envFrom
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+extraVolumes: []
+extraVolumeMounts: []
+
+service:
+  enabled: true
+  port: 80
+  targetPort: 8080
+
+probes:
+  enabled: true
+  readinessPath: /ready
+  livenessPath: /healthz
+
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits: { memory: 256Mi }
+
+autoscaling: { enabled: false, minReplicas: 2, maxReplicas: 6, targetCPU: 70 }
+pdb: { enabled: true, minAvailable: 1 }
+
+networkPolicy:
+  enabled: true
+  allowFrom: []                    # - { app: frontend, namespace: operations }
+  proxyOnlySubnet: 10.10.8.0/23
+
+externalSecret:
+  enabled: false
+  storeName: gcp-secret-manager
+  refreshInterval: 1h
+  keys: []                         # - { envName: API_KEY, gsmName: my-secret }
+
+cloudSqlProxy:
+  enabled: false
+  image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.1
+  instance: ""                     # project:region:instance
+  port: 5432
+
+httpRoute:
+  enabled: false
+  gateway: { name: petronova-gateway, namespace: gateway-infra }
+  hostnames: []
+  pathPrefix: /
+  stripPrefix: false
+
+metrics:
+  enabled: true
+  path: /metrics
+  interval: 30s

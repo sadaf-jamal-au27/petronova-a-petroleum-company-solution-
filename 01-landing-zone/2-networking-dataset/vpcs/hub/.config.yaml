@@ -1,0 +1,28 @@
+# PetroNova hub VPC: all hybrid connectivity terminates here (FAST v58 vpc.schema.json)
+project_id: $project_ids:net-core-0
+name: hub-0
+delete_default_routes_on_create: true
+mtu: 1500
+routers:
+  # One router per region and link type keeps failure domains independent
+  ic-as1:
+    region: $locations:primary
+    asn: 64514
+  ic-as2:
+    region: $locations:secondary
+    asn: 64515
+  # Partner Interconnect requires Google-side ASN 16550
+  pic-as1:
+    region: $locations:primary
+    asn: 16550
+  vpn-as1:
+    region: $locations:primary
+    asn: 64516
+ncc_config:
+  hub: $ncc_hubs:hub
+  group: $ncc_groups:hub/default
+routes:
+  default:
+    dest_range: 0.0.0.0/0
+    next_hop_type: "gateway"
+    next_hop: "default-internet-gateway"

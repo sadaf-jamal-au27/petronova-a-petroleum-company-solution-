@@ -1,0 +1,52 @@
+{
+  "type": "record",
+  "name": "Alarm",
+  "namespace": "com.petronova.ops.v1",
+  "fields": [
+    {
+      "name": "alarm_id",
+      "type": "string"
+    },
+    {
+      "name": "raised_at",
+      "type": "string"
+    },
+    {
+      "name": "site",
+      "type": "string"
+    },
+    {
+      "name": "asset_id",
+      "type": "string"
+    },
+    {
+      "name": "tag",
+      "type": "string"
+    },
+    {
+      "name": "severity",
+      "type": {
+        "type": "enum",
+        "name": "Severity",
+        "symbols": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ]
+      }
+    },
+    {
+      "name": "rule",
+      "type": "string"
+    },
+    {
+      "name": "value",
+      "type": "double"
+    },
+    {
+      "name": "threshold",
+      "type": "double"
+    }
+  ]
+}

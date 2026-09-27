@@ -1,0 +1,11 @@
+# Ingest (prod): Pub/Sub telemetry topics; mqtt-bridge runs in apps GKE and publishes here
+parent: $folder_ids:ot-data/prod
+services:
+  - pubsub.googleapis.com
+  - cloudkms.googleapis.com
+service_encryption_key_ids:
+  pubsub.googleapis.com:
+    - $kms_keys:pubsub-prod-petronova
+labels:
+  environment: production
+  zone: ot-data

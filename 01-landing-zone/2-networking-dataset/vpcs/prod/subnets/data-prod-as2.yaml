@@ -1,0 +1,5 @@
+name: data-prod-as2
+region: $locations:secondary
+ip_cidr_range: 10.120.5.0/24
+description: Dataflow workers asia-south2 (DR)
+enable_private_access: true

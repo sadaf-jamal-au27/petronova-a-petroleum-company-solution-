@@ -1,0 +1,5 @@
+name: proxy-prod-as2
+region: $locations:secondary
+ip_cidr_range: 10.120.8.0/23
+proxy_only: true
+description: Proxy-only subnet asia-south2

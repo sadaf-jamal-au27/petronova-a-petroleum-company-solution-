@@ -1,0 +1,10 @@
+# Prod overrides (primary cluster). DR cluster uses values-dr.yaml on top.
+replicaCount: 3
+gcpServiceAccount: mqtt-bridge@pnlab01-prod-apps-0.iam.gserviceaccount.com
+config:
+  LOG_LEVEL: "warning"
+  EVENTS_PROJECT: "pnlab01-prod-ingest-0"
+  MQTT_HOST: "mosquitto"
+  MQTT_PORT: "8883"
+  MQTT_TLS: "true"
+autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 12, targetCPU: 65 }

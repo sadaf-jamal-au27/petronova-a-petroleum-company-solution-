@@ -1,0 +1,8 @@
+name: Applications
+parent: $folder_ids:teams
+iam_by_principals:
+  $iam_principals:pn-app-squads:
+    - roles/viewer
+    - roles/container.clusterViewer
+  $iam_principals:gcp-platform-team:
+    - roles/container.admin

@@ -1,0 +1,42 @@
+env        = "dev"
+dr_enabled = false
+project_ids = {
+  apps      = "pnlab01-dev-apps-0"
+  ingest    = "pnlab01-dev-ingest-0"
+  data      = "pnlab01-dev-data-0"
+  ai        = "pnlab01-dev-ai-0"
+  artifacts = "pnlab01-prod-artifacts-0"
+  net_hub   = "pnlab01-prod-net-core-0"
+  sim_site  = "pnlab01-dev-sitesim-0" # create manually or add to project factory for the POC
+}
+network = {
+  spoke_network = "projects/pnlab01-dev-net-spoke-0/global/networks/dev-0"
+  hub_network   = "projects/pnlab01-prod-net-core-0/global/networks/hub-0"
+  gke_subnet    = "projects/pnlab01-dev-net-spoke-0/regions/asia-south1/subnetworks/gke-dev-as1"
+  data_subnet   = "projects/pnlab01-dev-net-spoke-0/regions/asia-south1/subnetworks/data-dev-as1"
+  master_cidr   = "172.16.10.32/28"
+}
+kms_keys = {
+  gke      = "projects/pnlab01-dev-sec-core-0/locations/asia-south1/keyRings/dev-petronova/cryptoKeys/gke"
+  sql      = "projects/pnlab01-dev-sec-core-0/locations/asia-south1/keyRings/dev-petronova/cryptoKeys/sql"
+  bigquery = "projects/pnlab01-dev-sec-core-0/locations/asia-south1/keyRings/dev-petronova/cryptoKeys/bigquery"
+  storage  = "projects/pnlab01-dev-sec-core-0/locations/asia-south1/keyRings/dev-petronova/cryptoKeys/storage"
+  pubsub   = "projects/pnlab01-dev-sec-core-0/locations/asia-south1/keyRings/dev-petronova/cryptoKeys/pubsub"
+}
+gke = {
+  authorized_ranges   = { admin = "203.0.113.50/32" } # REPLACE: your IP
+  deletion_protection = false
+}
+sql_tier = "db-f1-micro"
+workload_identities = {
+  "ot-ingest/mqtt-bridge"          = "mqtt-bridge@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+  "operations/alarm-service"       = "alarm-service@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+  "operations/timeseries-api"      = "timeseries-api@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+  "operations/asset-registry"      = "asset-registry@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+  "operations/workorder-service"   = "workorder-service@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+  "platform-system/external-secrets" = "external-secrets@pnlab01-dev-apps-0.iam.gserviceaccount.com"
+}
+poc_site = {
+  enabled    = true
+  edge_image = "asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/docker-images/edge-simulator:1.0.0"
+}

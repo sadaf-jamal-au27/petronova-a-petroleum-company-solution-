@@ -1,0 +1,21 @@
+# helm upgrade --install external-secrets external-secrets/external-secrets \
+#   -n platform-system --version 0.19.2 -f platform-addons/external-secrets/values.yaml
+installCRDs: true
+serviceAccount:
+  name: external-secrets
+  annotations:
+    iam.gke.io/gcp-service-account: external-secrets@pnlab01-dev-gke-0.iam.gserviceaccount.com
+resources:
+  requests: { cpu: 50m, memory: 128Mi }
+  limits: { memory: 256Mi }
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  capabilities: { drop: ["ALL"] }
+webhook:
+  resources:
+    requests: { cpu: 20m, memory: 64Mi }
+certController:
+  resources:
+    requests: { cpu: 20m, memory: 64Mi }

@@ -1,0 +1,10 @@
+# alarm-service in prod-dr (cluster petronova-prod-dr). CI bumps chartVersion/imageTag via PR.
+release: alarm-service
+namespace: operations
+chart: oci://asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/helm-charts/alarm-service
+chartVersion: 1.0.0
+imageTag: "1.0.0"
+valuesFiles:
+  - values-prod.yaml
+  - values-dr.yaml
+overrides: {}

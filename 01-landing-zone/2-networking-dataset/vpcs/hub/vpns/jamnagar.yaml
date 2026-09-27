@@ -1,0 +1,38 @@
+# Jamnagar refinery HA VPN (4 tunnels, 99.99%) until Interconnect is ordered in phase 2
+name: jamnagar
+region: $locations:primary
+peer_gateways:
+  default:
+    external:
+      redundancy_type: TWO_IPS_REDUNDANCY
+      interfaces:
+        - 203.0.113.30   # REPLACE: refinery firewall public IP 1
+        - 203.0.113.31   # REPLACE: refinery firewall public IP 2
+router_config:
+  create: false
+  name: $routers:hub/vpn-as1
+tunnels:
+  t0:
+    bgp_peer: { address: 169.254.20.1, asn: 65030 }
+    bgp_session_range: "169.254.20.2/30"
+    peer_external_gateway_interface: 0
+    shared_secret: "REPLACE_WITH_SECRET_FROM_SECRET_MANAGER"
+    vpn_gateway_interface: 0
+  t1:
+    bgp_peer: { address: 169.254.20.5, asn: 65030 }
+    bgp_session_range: "169.254.20.6/30"
+    peer_external_gateway_interface: 1
+    shared_secret: "REPLACE_WITH_SECRET_FROM_SECRET_MANAGER"
+    vpn_gateway_interface: 0
+  t2:
+    bgp_peer: { address: 169.254.20.9, asn: 65030 }
+    bgp_session_range: "169.254.20.10/30"
+    peer_external_gateway_interface: 0
+    shared_secret: "REPLACE_WITH_SECRET_FROM_SECRET_MANAGER"
+    vpn_gateway_interface: 1
+  t3:
+    bgp_peer: { address: 169.254.20.13, asn: 65030 }
+    bgp_session_range: "169.254.20.14/30"
+    peer_external_gateway_interface: 1
+    shared_secret: "REPLACE_WITH_SECRET_FROM_SECRET_MANAGER"
+    vpn_gateway_interface: 1

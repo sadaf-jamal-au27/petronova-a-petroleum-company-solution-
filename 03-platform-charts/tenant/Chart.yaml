@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tenant
+description: Onboards a team namespace with quotas, RBAC and default-deny networking
+type: application
+version: 1.2.0
+appVersion: "1.2.0"

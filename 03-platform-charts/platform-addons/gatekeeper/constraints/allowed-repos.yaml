@@ -1,0 +1,17 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedRepos
+metadata:
+  name: petronova-allowed-repos
+spec:
+  enforcementAction: dryrun
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces: [ot-ingest, operations]
+  parameters:
+    repos:
+      - asia-south1-docker.pkg.dev/pnlab01-prod-shared-artifacts-0/
+      - gcr.io/cloud-sql-connectors/
+      - eclipse-mosquitto
+      - registry.k8s.io/

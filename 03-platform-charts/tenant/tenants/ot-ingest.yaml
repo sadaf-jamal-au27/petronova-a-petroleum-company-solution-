@@ -1,0 +1,7 @@
+namespace: ot-ingest
+team: data-team
+dataClassification: confidential
+adminGroup: pn-data-team@petronova-lab.in
+viewGroups: [pn-ot-engineering@petronova-lab.in, pn-soc-analysts@petronova-lab.in]
+quota: { requests.cpu: "6", requests.memory: 12Gi, limits.memory: 24Gi, pods: "40", services.loadbalancers: "2" }
+allowSameNamespace: true   # mosquitto broker <-> mqtt-bridge

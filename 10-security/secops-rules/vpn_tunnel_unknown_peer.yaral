@@ -1,0 +1,11 @@
+rule petronova_vpn_tunnel_unknown_peer {
+  meta:
+    description = "VPN tunnel created or modified towards a peer IP not in the approved site list"
+    severity = "CRITICAL"
+  events:
+    $e.metadata.product_event_type = /compute.vpnTunnels.(insert|patch)/
+    $e.target.ip != "203.0.113.10" and $e.target.ip != "203.0.113.11"
+    $e.target.ip != "203.0.113.30" and $e.target.ip != "203.0.113.31"
+  condition:
+    $e
+}

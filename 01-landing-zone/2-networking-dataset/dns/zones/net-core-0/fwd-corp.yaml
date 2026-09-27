@@ -1,0 +1,9 @@
+# Cloud -> on-prem: forward corp.petronova.local to HQ resolvers over Interconnect
+project_id: $project_ids:net-core-0
+domain: corp.petronova.local.
+forwarding:
+  forwarders:
+    "172.20.0.53": private   # REPLACE: HQ DNS resolver 1 (DMZ)
+    "172.20.1.53": private   # REPLACE: HQ DNS resolver 2 (DMZ)
+  client_networks:
+    - $networks:hub

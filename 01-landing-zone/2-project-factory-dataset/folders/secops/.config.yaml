@@ -1,0 +1,6 @@
+name: SecOps
+parent: $folder_ids:teams
+iam_by_principals:
+  $iam_principals:pn-soc-analysts:
+    - roles/viewer
+    - roles/logging.viewer

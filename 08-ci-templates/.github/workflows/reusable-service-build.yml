@@ -1,0 +1,70 @@
+# Test, build, scan, push, attest; then open a PR in petronova-deployments bumping dev/<service>.yaml
+name: reusable-service-build
+on:
+  workflow_call:
+    inputs:
+      service: { type: string, required: true }
+      registry: { type: string, default: asia-south1-docker.pkg.dev/pnlab01-prod-artifacts-0/docker-images }
+      build-sa: { type: string, required: true }
+    secrets:
+      wif-provider: { required: true }
+      deployments-token: { required: true }   # GitHub App token with PR rights on petronova-deployments
+permissions: { contents: read, id-token: write }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Unit and contract tests
+        run: |
+          pip install -r requirements.txt pytest httpx
+          pytest -q tests
+      - id: meta
+        run: echo "tag=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.wif-provider }}
+          service_account: ${{ inputs.build-sa }}
+      - run: gcloud auth configure-docker asia-south1-docker.pkg.dev -q
+      - name: Build
+        run: docker build -t ${{ inputs.registry }}/${{ inputs.service }}:${{ steps.meta.outputs.tag }} .
+      - name: Scan (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ inputs.registry }}/${{ inputs.service }}:${{ steps.meta.outputs.tag }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - id: push
+        name: Push
+        run: |
+          docker push ${{ inputs.registry }}/${{ inputs.service }}:${{ steps.meta.outputs.tag }}
+          echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ inputs.registry }}/${{ inputs.service }}:${{ steps.meta.outputs.tag }} | cut -d@ -f2)" >> "$GITHUB_OUTPUT"
+      # Binary Authorization attestation (enable once the attestor + KMS signing key exist in stage 3)
+      # - run: gcloud beta container binauthz attestations sign-and-create ...
+  chart:
+    needs: build
+    uses: petronova-org/petronova-ci-templates/.github/workflows/reusable-chart-release.yml@v1
+    with: { chart-path: chart, publisher-sa: "${{ inputs.build-sa }}" }
+    secrets: { wif-provider: "${{ secrets.wif-provider }}" }
+  bump-dev:
+    needs: [build, chart]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { repository: petronova-org/petronova-deployments, token: "${{ secrets.deployments-token }}" }
+      - name: Bump dev
+        run: |
+          yq -i '.imageTag = "${{ needs.build.outputs.tag }}" | .chartVersion = "${{ needs.chart.outputs.version }}"' dev/${{ inputs.service }}.yaml
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.deployments-token }}
+          branch: bump/${{ inputs.service }}-${{ needs.build.outputs.tag }}
+          title: "dev: ${{ inputs.service }} ${{ needs.build.outputs.tag }}"
+          body: "Automated bump from ${{ github.repository }}@${{ github.sha }}"
+          labels: auto-merge-dev

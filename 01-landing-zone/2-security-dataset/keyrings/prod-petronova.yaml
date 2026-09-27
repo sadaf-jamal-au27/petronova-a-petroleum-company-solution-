@@ -1,0 +1,17 @@
+# PetroNova CMEK keyring for prod. Exported key names follow "<key>-<file name>",
+# e.g. $kms_keys:gke-prod-petronova, consumed by 2-project-factory and stage 3.
+location: $locations:primary
+project_id: $project_ids:prod-sec-core-0
+keys:
+  gke:
+    rotation_period: 7776000s
+  sql:
+    rotation_period: 7776000s
+  bigquery:
+    rotation_period: 7776000s
+  storage:
+    rotation_period: 7776000s
+  pubsub:
+    rotation_period: 7776000s
+  compute:
+    rotation_period: 7776000s

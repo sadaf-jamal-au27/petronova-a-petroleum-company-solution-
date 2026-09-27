@@ -1,0 +1,29 @@
+# Reference for FAST 1-vpcsc (confirm schema with fast/stages/1-vpcsc/schemas for your release).
+# Start in dry-run; enforce after 4 weeks with no unexpected violations.
+perimeters:
+  ot-data:
+    dry_run: true
+    resources:
+      - projects/pnlab01-prod-ingest-0
+      - projects/pnlab01-prod-data-0
+      - projects/pnlab01-prod-ai-0
+    restricted_services:
+      - bigquery.googleapis.com
+      - bigtable.googleapis.com
+      - storage.googleapis.com
+      - pubsub.googleapis.com
+      - dataflow.googleapis.com
+      - aiplatform.googleapis.com
+    ingress_policies:
+      - from: { identities: ["serviceAccount:mqtt-bridge@pnlab01-prod-apps-0.iam.gserviceaccount.com"], sources: ["projects/pnlab01-prod-apps-0"] }
+        to: { operations: { pubsub.googleapis.com: ["google.pubsub.v1.Publisher.Publish"] }, resources: ["projects/pnlab01-prod-ingest-0"] }
+      - from: { identities: ["serviceAccount:timeseries-api@pnlab01-prod-apps-0.iam.gserviceaccount.com"], sources: ["projects/pnlab01-prod-apps-0"] }
+        to: { operations: { bigtable.googleapis.com: ["*"] }, resources: ["projects/pnlab01-prod-data-0"] }
+      - from: { identities: ["group:pn-data-team@petronova-lab.in"], access_levels: ["corp_managed_devices_india"] }
+        to: { operations: { bigquery.googleapis.com: ["*"] }, resources: ["*"] }
+    egress_policies: []   # no data leaves the perimeter
+access_levels:
+  corp_managed_devices_india:
+    conditions:
+      - regions: [IN]
+        device_policy: { require_corp_owned: true, require_screen_lock: true }

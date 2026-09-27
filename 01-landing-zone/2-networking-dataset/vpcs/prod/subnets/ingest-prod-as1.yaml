@@ -1,0 +1,5 @@
+name: ingest-prod-as1
+region: $locations:primary
+ip_cidr_range: 10.110.4.0/24
+description: Ingest endpoints (internal LB for mqtt-bridge) asia-south1
+enable_private_access: true

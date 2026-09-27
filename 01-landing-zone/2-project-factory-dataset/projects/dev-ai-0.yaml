@@ -1,0 +1,22 @@
+# AI (dev): Vertex AI pipelines, models and endpoints for predictive maintenance
+parent: $folder_ids:ot-data/dev
+services:
+  - aiplatform.googleapis.com
+  - bigquery.googleapis.com
+  - storage.googleapis.com
+service_encryption_key_ids:
+  aiplatform.googleapis.com:
+    - $kms_keys:compute-dev-petronova
+service_accounts:
+  vertex-pipelines:
+    display_name: Vertex AI training pipelines
+    iam_project_roles:
+      $project_ids:dev-ai-0:
+        - roles/aiplatform.user
+        - roles/storage.objectAdmin
+      $project_ids:dev-data-0:
+        - roles/bigquery.dataViewer
+        - roles/bigquery.jobUser
+labels:
+  environment: development
+  zone: ot-data

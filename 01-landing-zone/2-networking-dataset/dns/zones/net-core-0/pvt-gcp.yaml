@@ -1,0 +1,11 @@
+# On-prem -> cloud: HQ resolvers forward gcp.petronova.internal to the hub inbound policy IPs
+project_id: $project_ids:net-core-0
+domain: gcp.petronova.internal.
+private:
+  client_networks:
+    - $networks:hub
+recordsets:
+  "A mqtt-prod":
+    records: ["10.110.4.10"]
+  "A mqtt-dev":
+    records: ["10.130.4.10"]

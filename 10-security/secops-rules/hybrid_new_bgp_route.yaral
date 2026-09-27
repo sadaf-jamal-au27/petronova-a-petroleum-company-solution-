@@ -1,0 +1,14 @@
+rule petronova_new_bgp_route_from_site {
+  meta:
+    author = "PetroNova SOC"
+    description = "Cloud Router learned a prefix outside the approved plant DMZ ranges (possible OT exposure or route hijack)"
+    severity = "HIGH"
+    mitre_attack_technique = "T1599"
+  events:
+    $e.metadata.product_name = "Google Cloud Platform"
+    $e.metadata.product_event_type = /BgpRouteLearned|RouterStatus/
+    $e.target.ip_subnet = $prefix
+    not net.ip_in_range_cidr($prefix, "172.20.0.0/14")
+  condition:
+    $e
+}

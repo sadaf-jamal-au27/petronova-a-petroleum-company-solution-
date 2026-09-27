@@ -1,0 +1,13 @@
+# .github/workflows/networking.yml in petronova-landing-zone (one per stage; FAST can generate these via cicd.yaml)
+name: 2-networking
+on:
+  push: { branches: [main], paths: ["2-networking-dataset/**"] }
+  pull_request: { paths: ["2-networking-dataset/**"] }
+jobs:
+  tf:
+    uses: petronova-org/petronova-ci-templates/.github/workflows/reusable-terraform.yml@v1
+    with:
+      working-directory: .fabric/fast/stages/2-networking
+      plan-sa: pnlab01-prod-iac-core-0-iac-networking-ro@pnlab01-prod-iac-core-0.iam.gserviceaccount.com   # from FAST outputs
+      apply-sa: pnlab01-prod-iac-core-0-iac-networking-rw@pnlab01-prod-iac-core-0.iam.gserviceaccount.com
+    secrets: inherit

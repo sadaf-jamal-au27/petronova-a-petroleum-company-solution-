@@ -1,0 +1,8 @@
+# Shared Artifact Registry (images + Helm OCI charts)
+parent: $folder_ids:applications/prod
+services:
+  - artifactregistry.googleapis.com
+  - containeranalysis.googleapis.com
+  - containerscanning.googleapis.com
+labels:
+  environment: production

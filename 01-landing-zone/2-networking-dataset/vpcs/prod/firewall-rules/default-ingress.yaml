@@ -1,0 +1,42 @@
+ingress:
+  allow-dmz-to-ingest-prod:
+    description: Plant L3.5 DMZ edge gateways to mqtt-bridge (MQTT over TLS) and PI relay only
+    priority: 1000
+    source_ranges: [172.20.0.0/22, 172.21.0.0/24, 172.22.0.0/24]
+    destination_ranges: [10.110.0.0/22, 10.110.4.0/24, 10.120.0.0/22, 10.120.4.0/24]
+    rules:
+      - protocol: tcp
+        ports: ["8883", "5450"]
+    enable_logging: { include_metadata: true }
+  allow-gke-healthchecks-prod:
+    description: Google health checks and LB ranges
+    priority: 1001
+    source_ranges: [35.191.0.0/16, 130.211.0.0/22, 209.85.152.0/22, 209.85.204.0/22]
+    rules:
+      - protocol: tcp
+  allow-gke-master-prod:
+    description: GKE control planes to nodes (webhooks, kubelet)
+    priority: 1002
+    source_ranges: [172.16.10.0/28, 172.16.10.16/28]
+    rules:
+      - protocol: tcp
+        ports: ["443", "8443", "9443", "10250", "15017"]
+  allow-intra-prod:
+    description: Intra-spoke node, pod and service traffic
+    priority: 1003
+    source_ranges: [10.110.0.0/20, 10.120.0.0/20, 10.200.0.0/15]
+    rules:
+      - protocol: all
+  deny-dmz-other-prod:
+    description: Everything else from plant DMZs is denied and logged
+    priority: 1100
+    deny: true
+    source_ranges: [172.20.0.0/22, 172.21.0.0/24, 172.22.0.0/24]
+    rules:
+      - protocol: all
+    enable_logging: { include_metadata: true }
+  ingress-default-prod-deny:
+    description: "Deny and log any unmatched ingress traffic."
+    deny: true
+    priority: 65535
+    enable_logging: { include_metadata: false }

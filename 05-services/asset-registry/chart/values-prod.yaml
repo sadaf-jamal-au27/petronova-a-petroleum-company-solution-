@@ -1,0 +1,13 @@
+# Prod overrides (primary cluster). DR cluster uses values-dr.yaml on top.
+replicaCount: 3
+gcpServiceAccount: asset-registry@pnlab01-prod-apps-0.iam.gserviceaccount.com
+config:
+  LOG_LEVEL: "warning"
+  EVENTS_PROJECT: "pnlab01-prod-ingest-0"
+  DB_NAME: "assets"
+  DB_USER: "asset-registry@pnlab01-prod-apps-0.iam"
+  DB_HOST: "127.0.0.1"
+  DB_PORT: "5432"
+cloudSqlProxy:
+  instance: "pnlab01-prod-apps-0:asia-south1:pn-apps-prod"
+autoscaling: { enabled: true, minReplicas: 3, maxReplicas: 12, targetCPU: 65 }

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PetroNova telemetry batch (MQTT payload, Sparkplug-B inspired JSON)",
+  "type": "object",
+  "required": [
+    "site",
+    "edge_id",
+    "seq",
+    "sent_at",
+    "points"
+  ],
+  "properties": {
+    "site": {
+      "type": "string"
+    },
+    "edge_id": {
+      "type": "string"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonic per edge; used for de-duplication after replay"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "replayed": {
+      "type": "boolean",
+      "default": false
+    },
+    "points": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "required": [
+          "asset_id",
+          "tag",
+          "ts",
+          "v"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "ts": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "v": {
+            "type": "number"
+          },
+          "u": {
+            "type": "string",
+            "description": "unit"
+          },
+          "q": {
+            "type": "string",
+            "enum": [
+              "GOOD",
+              "UNCERTAIN",
+              "BAD"
+            ],
+            "default": "GOOD"
+          }
+        }
+      }
+    }
+  }
+}

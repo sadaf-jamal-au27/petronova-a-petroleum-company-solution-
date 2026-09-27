@@ -1,0 +1,3 @@
+name: Development
+tag_bindings:
+  environment: $tag_values:environment/development

@@ -1,0 +1,10 @@
+name: Development
+tag_bindings:
+  environment: $tag_values:environment/development
+iam_by_principals:
+  $iam_principals:pn-data-team:
+    - roles/bigquery.admin
+    - roles/bigtable.admin
+    - roles/dataflow.admin
+    - roles/pubsub.editor
+    - roles/aiplatform.user
